@@ -117,7 +117,7 @@ export const SignUpPage = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   className={`input input-bordered w-full pl-10`}
-                  placeholder="********"
+                  placeholder="••••••••"
                   value={formData.password}
                   onChange={(e) =>
                     setFormData({ ...formData, password: e.target.value })
@@ -163,7 +163,7 @@ export const SignUpPage = () => {
             <p className="text-base-content/60">
               Already have an account? {""}
               <Link to="/login" className="link line-primary">
-                Sign in
+                Sign In
               </Link>
             </p>
           </div>
