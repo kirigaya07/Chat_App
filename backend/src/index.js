@@ -24,7 +24,15 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/message", messageRoutes);
 
-app.listen(5001, () => {
-  console.log(`Server is running on port : ${PORT}`);
-  connnectDB();
-});
+async function startServer() {
+  try {
+    await connnectDB(); // Ensure DB is connected before starting the server
+    app.listen(PORT, () => {
+      console.log(`Server is running on port: ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+  }
+}
+
+startServer();
