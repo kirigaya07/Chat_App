@@ -11,20 +11,41 @@ import {
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import AuthImagePattern from "../components/AuthImagePattern";
+import toast from "react-hot-toast";
 
 export const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    fullName: "",
+    fullname: "",
     email: "",
     password: "",
   });
 
   const { signup, isSigningUp } = useAuthStore();
 
-  const validateForm = () => {};
-  const handleSubmit = (e) => {
+  const validateForm = () => {
+    if (!formData.fullname.trim()) return toast.error("Full name is required");
+    if (!formData.email.trim()) return toast.error("Email is required");
+    if (!/\S+@\S+\.\S+/.test(formData.email))
+      return toast.error("Invalid email format");
+    if (!formData.password) return toast.error("Password is required");
+    if (formData.password.length < 6)
+      return toast.error("Password must be at least 6 characters");
+
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const success = validateForm();
+    if (!success) return;
+
+    try {
+      await signup(formData);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Something went wrong");
+    }
   };
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
@@ -57,9 +78,9 @@ export const SignUpPage = () => {
                   type="text"
                   className={`input input-bordered w-full pl-10`}
                   placeholder="John Doe"
-                  value={formData.fullName}
+                  value={formData.fullname}
                   onChange={(e) =>
-                    setFormData({ ...formData, fullName: e.target.value })
+                    setFormData({ ...formData, fullname: e.target.value })
                   }
                 />
               </div>
@@ -74,7 +95,7 @@ export const SignUpPage = () => {
                   <Mail className="size-5 text-base-content/40" />
                 </div>
                 <input
-                  type="text"
+                  type="email"
                   className={`input input-bordered w-full pl-10`}
                   placeholder="you@example.com"
                   value={formData.email}
@@ -101,10 +122,11 @@ export const SignUpPage = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, password: e.target.value })
                   }
+                  autoComplete="new-password"
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
@@ -119,7 +141,12 @@ export const SignUpPage = () => {
             <button
               type="submit"
               className="btn btn-primary w-full"
-              disabled={isSigningUp}
+              disabled={
+                isSigningUp ||
+                !formData.fullname ||
+                !formData.email ||
+                formData.password.length < 6
+              }
             >
               {isSigningUp ? (
                 <>
