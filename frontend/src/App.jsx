@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { useAuthStore } from "./store/useAuthStore";
 import { Loader } from "lucide-react";
 import { Toaster } from "react-hot-toast";
+import { Navbar } from "./components/Navbar";
 
 export const App = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -27,6 +28,8 @@ export const App = () => {
   }
   return (
     <div>
+      <Navbar />
+
       <Routes>
         <Route
           path="/"
