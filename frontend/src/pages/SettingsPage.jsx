@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Send } from "lucide-react";
 import { THEMES } from "../constants";
 import { useThemeStore } from "../store/useThemeStore";
