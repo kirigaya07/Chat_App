@@ -86,10 +86,19 @@ const MessageInput = () => {
             onChange={handleImageChange}
           />
 
+          {/* Visible only on mobile */}
           <button
             type="button"
-            className={`hidden sm:flex btn btn-circle
-                     ${imagePreview ? "text-emerald-500" : "text-zinc-400"}`}
+            className="block sm:hidden btn btn-circle text-zinc-400"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <Image size={20} />
+          </button>
+
+          {/* Visible only on tablets & desktops */}
+          <button
+            type="button"
+            className="hidden sm:flex btn btn-circle text-zinc-400"
             onClick={() => fileInputRef.current?.click()}
           >
             <Image size={20} />
