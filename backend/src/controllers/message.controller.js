@@ -28,7 +28,7 @@ export const getMessages = async (req, res) => {
         { senderId: myId, receiverId: userToChatId },
         { senderId: userToChatId, receiverId: myId },
       ],
-    });
+    }).lean();
 
     res.status(200).json(messages);
   } catch (error) {
@@ -45,8 +45,16 @@ export const sendMessage = async (req, res) => {
 
     let imageUrl;
     if (image) {
-      //Upload base64 image to cloudinary
-      const uploadResponse = await cloudinary.uploader.upload(image);
+      // Upload image to Cloudinary with size limit
+      const uploadResponse = await cloudinary.uploader.upload(image, {
+        resource_type: "image",
+        folder: "chat_images", // Optional: Save in a specific folder
+        transformation: [
+          { quality: "auto", fetch_format: "auto" }, // Optimize image
+        ],
+        limits: { file_size: 10485760 }, // 10MB limit
+      });
+
       imageUrl = uploadResponse.secure_url;
     }
 
@@ -57,16 +65,16 @@ export const sendMessage = async (req, res) => {
       image: imageUrl,
     });
 
-    await newMessage.save();
-
     const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", newMessage);
     }
 
+    await newMessage.save();
+
     res.status(201).json(newMessage);
   } catch (error) {
     console.log("Error in sendMessage: ", error.message);
-    res.status(500).json({ error: "internal server error" });
+    res.status(500).json({ error: "Internal server error" });
   }
 };
